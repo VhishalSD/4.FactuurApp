@@ -1,12 +1,11 @@
-﻿using JSONCRUD.Services;
+﻿using System;
+using JSONCRUD.Services;
 using JSONCRUD.Utilities;
-using System;
 
 class Program
 {
     static void Main()
     {
-        // Initialiseer services met json-bestandshandler
         var personService = new PersonService(new JsonFileHandler());
         var invoiceService = new InvoiceService(new JsonFileHandler());
 
@@ -17,7 +16,7 @@ class Program
         }
     }
 
-    // Hoofdmenu tonen
+    // Display the main menu
     static void ShowMainMenu()
     {
         Console.ForegroundColor = ConsoleColor.Cyan;
@@ -29,19 +28,15 @@ class Program
         Console.Write("Choose an option: ");
     }
 
-    // Hoofdmenu input verwerken
+    // Handle main menu user input
     static void HandleMainMenuInput(PersonService personService, InvoiceService invoiceService)
     {
         string? input = Console.ReadLine();
 
         switch (input)
         {
-            case "1":
-                ShowPersonMenu(personService);
-                break;
-            case "2":
-                ShowInvoiceMenu(invoiceService);
-                break;
+            case "1": HandlePersonMenu(personService); break;
+            case "2": HandleInvoiceMenu(invoiceService); break;
             case "0":
                 personService.SaveAndExit();
                 invoiceService.SaveAndExit();
@@ -53,8 +48,8 @@ class Program
         }
     }
 
-    // Personenbeheer menu tonen en verwerken
-    static void ShowPersonMenu(PersonService service)
+    // Display and handle person management menu
+    static void HandlePersonMenu(PersonService service)
     {
         while (true)
         {
@@ -88,8 +83,8 @@ class Program
         }
     }
 
-    // Factuurbeheer menu tonen en verwerken
-    static void ShowInvoiceMenu(InvoiceService service)
+    // Display and handle invoice management menu
+    static void HandleInvoiceMenu(InvoiceService service)
     {
         while (true)
         {
@@ -117,7 +112,7 @@ class Program
         }
     }
 
-    // Foutmelding tonen
+    // Display error messages in red
     static void ShowError(string message)
     {
         Console.ForegroundColor = ConsoleColor.Red;

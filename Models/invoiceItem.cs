@@ -1,11 +1,18 @@
 ﻿namespace JSONCRUD.Models
 {
-    // Model voor een factuurregel (item)
+    // Model representing a single invoice line item
     public class InvoiceItem
     {
+        // Description of the item or service
         public string Description { get; set; } = string.Empty;
+
+        // Quantity of the item
         public int Quantity { get; set; }
+
+        // Price per unit
         public decimal UnitPrice { get; set; }
-        public decimal SubTotal => Quantity * UnitPrice; // Totaalprijs per regel
+
+        // Total price for this line (quantity * unit price)
+        public decimal SubTotal => Quantity * UnitPrice;
     }
 }

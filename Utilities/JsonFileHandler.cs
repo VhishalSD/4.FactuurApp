@@ -5,9 +5,12 @@ using System.Text.Json;
 
 namespace JSONCRUD.Utilities
 {
-    // Klasse voor JSON-bestand lezen en schrijven
+    // Utility class for reading and writing JSON files
     public class JsonFileHandler
     {
+        private const string SeparatorLine = "========================================";
+
+        // Load list from JSON file
         public List<T> LoadFromJson<T>(string filePath)
         {
             try
@@ -20,11 +23,16 @@ namespace JSONCRUD.Utilities
             }
             catch (Exception ex)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(SeparatorLine);
                 Console.WriteLine($"Error loading JSON from '{filePath}': {ex.Message}");
+                Console.WriteLine(SeparatorLine);
+                Console.ResetColor();
                 return new List<T>();
             }
         }
 
+        // Save list to JSON file
         public void SaveToJson<T>(string filePath, List<T> data)
         {
             try
@@ -35,7 +43,11 @@ namespace JSONCRUD.Utilities
             }
             catch (Exception ex)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(SeparatorLine);
                 Console.WriteLine($"Error saving JSON to '{filePath}': {ex.Message}");
+                Console.WriteLine(SeparatorLine);
+                Console.ResetColor();
             }
         }
     }

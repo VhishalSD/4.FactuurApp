@@ -7,28 +7,37 @@ using System.Linq;
 
 namespace JSONCRUD.Services
 {
+    // Service for managing invoices with input validation
     public class InvoiceService
     {
+        // Readonly Private Fields
         private readonly JsonFileHandler _jsonHandler;
+
+        // Private Fields
         private List<Invoice> _invoices;
+
+        // Constants
         private const string FilePath = "invoices.json";
         private readonly CultureInfo _nlCulture = new CultureInfo("nl-NL");
+        private const string SeparatorLine = "========================================";
 
-        // Constructor laadt bestaande facturen vanuit JSON-bestand
+        // Constructor 
         public InvoiceService(JsonFileHandler jsonHandler)
         {
             _jsonHandler = jsonHandler;
             _invoices = _jsonHandler.LoadFromJson<Invoice>(FilePath);
         }
 
-        // Sla facturen op en toon bevestiging
+        // Public Methods 
+
+        // Save invoices to JSON file and show confirmation
         public void SaveAndExit()
         {
             _jsonHandler.SaveToJson(FilePath, _invoices);
             Console.WriteLine("Invoices saved.");
         }
 
-        // Nieuwe factuur aanmaken met invoervalidatie
+        // Create a new invoice with input validation
         public void CreateInvoice()
         {
             string name;
@@ -41,7 +50,7 @@ namespace JSONCRUD.Services
                     name = CapitalizeName(name);
                     break;
                 }
-                Console.WriteLine("Invalid name. Only letters (including accents), spaces and hyphens allowed.");
+                ShowError("Invalid name. Only letters (including accents), spaces and hyphens allowed.");
             }
 
             var items = new List<InvoiceItem>();
@@ -57,7 +66,7 @@ namespace JSONCRUD.Services
                     Console.Write("Quantity: ");
                     if (int.TryParse(Console.ReadLine(), out quantity) && quantity > 0)
                         break;
-                    Console.WriteLine("Invalid quantity. Must be a positive integer.");
+                    ShowError("Invalid quantity. Must be a positive integer.");
                 }
 
                 decimal unitPrice;
@@ -65,8 +74,8 @@ namespace JSONCRUD.Services
                 {
                     Console.Write("Unit price (e.g. 12,50): ");
                     if (decimal.TryParse(Console.ReadLine(), NumberStyles.Number, _nlCulture, out unitPrice) && unitPrice >= 0)
-                    break;
-                    Console.WriteLine("Invalid unit price. Must be a non-negative number.");
+                        break;
+                    ShowError("Invalid unit price. Must be a non-negative number.");
                 }
 
                 items.Add(new InvoiceItem
@@ -90,7 +99,7 @@ namespace JSONCRUD.Services
             Console.WriteLine("Invoice created.");
         }
 
-        // Alle facturen tonen met nette opmaak
+        // Display all invoices
         public void ReadAllInvoices()
         {
             if (!_invoices.Any())
@@ -105,20 +114,20 @@ namespace JSONCRUD.Services
             }
         }
 
-        // Factuur verwijderen met bevestiging
+        // Delete an invoice by ID with confirmation
         public void DeleteInvoice()
         {
             Console.Write("Enter invoice ID to delete: ");
             if (!int.TryParse(Console.ReadLine(), out int id))
             {
-                Console.WriteLine("Invalid ID.");
+                ShowError("Invalid ID.");
                 return;
             }
 
             var invoice = _invoices.FirstOrDefault(i => i.Id == id);
             if (invoice == null)
             {
-                Console.WriteLine("Invoice not found.");
+                ShowError("Invoice not found.");
                 return;
             }
 
@@ -135,31 +144,33 @@ namespace JSONCRUD.Services
             }
         }
 
-        // Zoek factuur op ID en toon deze
+        // Search and display an invoice by ID
         public void SearchInvoiceById()
         {
             Console.Write("Enter invoice ID to search: ");
             if (!int.TryParse(Console.ReadLine(), out int id))
             {
-                Console.WriteLine("Invalid ID.");
+                ShowError("Invalid ID.");
                 return;
             }
 
             var invoice = _invoices.FirstOrDefault(i => i.Id == id);
             if (invoice == null)
             {
-                Console.WriteLine("Invoice not found.");
+                ShowError("Invoice not found.");
                 return;
             }
 
             DisplayInvoice(invoice);
         }
 
-        // Helper: toon een factuur netjes geformatteerd met valuta en datum
+        // Private Methods 
+
+        // Display formatted invoice details
         private void DisplayInvoice(Invoice inv)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(new string('=', 40));
+            Console.WriteLine(SeparatorLine);
             Console.WriteLine($"Invoice ID   : {inv.Id}");
             Console.WriteLine($"Customer     : {inv.CustomerName}");
             Console.WriteLine($"Date         : {inv.InvoiceDate:dd-MM-yyyy}");
@@ -171,11 +182,11 @@ namespace JSONCRUD.Services
             Console.WriteLine($"Subtotal     : {inv.TotalAmount.ToString("C", _nlCulture)}");
             Console.WriteLine($"VAT (21%)    : {inv.VATAmount.ToString("C", _nlCulture)}");
             Console.WriteLine($"Total incl.  : {inv.TotalWithVAT.ToString("C", _nlCulture)}");
-            Console.WriteLine(new string('=', 40));
+            Console.WriteLine(SeparatorLine);
             Console.ResetColor();
         }
 
-        // Controleer of naam alleen geldige letters, spaties en koppeltekens bevat
+        // Validate customer name
         private bool IsValidName(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) return false;
@@ -187,11 +198,19 @@ namespace JSONCRUD.Services
             return true;
         }
 
-        // Zet naam om naar hoofdletters per woord (capitalize)
+        // Capitalize customer name
         private string CapitalizeName(string name)
         {
             TextInfo textInfo = _nlCulture.TextInfo;
             return textInfo.ToTitleCase(name.ToLower());
+        }
+
+        // Show formatted error message
+        private void ShowError(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ResetColor();
         }
     }
 }

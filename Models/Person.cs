@@ -2,7 +2,7 @@
 
 namespace JSONCRUD.Models
 {
-    // Model voor een persoon
+    // Person model representing an individual with an ID, name, and birthdate
     public class Person
     {
         public int Id { get; set; }

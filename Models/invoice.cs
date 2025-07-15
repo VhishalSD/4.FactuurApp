@@ -3,15 +3,22 @@ using System.Collections.Generic;
 
 namespace JSONCRUD.Models
 {
-    // Model voor een factuur
+    // Model representing an invoice
     public class Invoice
     {
-        public int Id { get; set; }  // Unieke factuur-ID
-        public string CustomerName { get; set; } = string.Empty;  // Naam van klant
-        public DateTime InvoiceDate { get; set; }  // Datum factuur
-        public List<InvoiceItem> Items { get; set; } = new List<InvoiceItem>();  // Lijst met factuurregels
+        // Unique invoice ID
+        public int Id { get; set; }
 
-        // Bereken totaal exclusief BTW
+        // Customer's name
+        public string CustomerName { get; set; } = string.Empty;
+
+        // Date when the invoice was created
+        public DateTime InvoiceDate { get; set; }
+
+        // List of line items on the invoice
+        public List<InvoiceItem> Items { get; set; } = new List<InvoiceItem>();
+
+        // Calculate total amount excluding VAT
         public decimal TotalAmount
         {
             get
@@ -25,10 +32,10 @@ namespace JSONCRUD.Models
             }
         }
 
-        // Bereken BTW (21%)
+        // Calculate VAT amount at 21%
         public decimal VATAmount => TotalAmount * 0.21m;
 
-        // Totaal inclusief BTW
+        // Calculate total amount including VAT
         public decimal TotalWithVAT => TotalAmount + VATAmount;
     }
 }
