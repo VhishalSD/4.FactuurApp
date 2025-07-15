@@ -1,24 +1,18 @@
-﻿using System;
+﻿using FactuurApp.Models;
+using System;
 using System.Collections.Generic;
 
-namespace JSONCRUD.Models
+namespace FactuurApp.Models
 {
-    // Model representing an invoice
+    // Model for an invoice
     public class Invoice
     {
-        // Unique invoice ID
-        public int Id { get; set; }
+        public int Id { get; set; }  // Unique invoice ID
+        public string CustomerName { get; set; } = string.Empty;  // Customer's name
+        public DateTime InvoiceDate { get; set; }  // Invoice date
+        public List<InvoiceItem> Items { get; set; } = new List<InvoiceItem>();  // List of invoice items
 
-        // Customer's name
-        public string CustomerName { get; set; } = string.Empty;
-
-        // Date when the invoice was created
-        public DateTime InvoiceDate { get; set; }
-
-        // List of line items on the invoice
-        public List<InvoiceItem> Items { get; set; } = new List<InvoiceItem>();
-
-        // Calculate total amount excluding VAT
+        // Calculate total excluding VAT
         public decimal TotalAmount
         {
             get
@@ -32,10 +26,10 @@ namespace JSONCRUD.Models
             }
         }
 
-        // Calculate VAT amount at 21%
+        // Calculate VAT (21%)
         public decimal VATAmount => TotalAmount * 0.21m;
 
-        // Calculate total amount including VAT
+        // Total including VAT
         public decimal TotalWithVAT => TotalAmount + VATAmount;
     }
 }

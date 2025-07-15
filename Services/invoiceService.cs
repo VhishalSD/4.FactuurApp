@@ -1,43 +1,32 @@
-﻿using JSONCRUD.Models;
-using JSONCRUD.Utilities;
+﻿using FactuurApp.Models;
+using FactuurApp.Utilities;
+using FactuurApp.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace JSONCRUD.Services
+namespace FactuurApp.Services
 {
-    // Service for managing invoices with input validation
     public class InvoiceService
     {
-        // Readonly Private Fields
         private readonly JsonFileHandler _jsonHandler;
-
-        // Private Fields
         private List<Invoice> _invoices;
-
-        // Constants
         private const string FilePath = "invoices.json";
         private readonly CultureInfo _nlCulture = new CultureInfo("nl-NL");
-        private const string SeparatorLine = "========================================";
 
-        // Constructor 
         public InvoiceService(JsonFileHandler jsonHandler)
         {
             _jsonHandler = jsonHandler;
             _invoices = _jsonHandler.LoadFromJson<Invoice>(FilePath);
         }
 
-        // Public Methods 
-
-        // Save invoices to JSON file and show confirmation
         public void SaveAndExit()
         {
             _jsonHandler.SaveToJson(FilePath, _invoices);
             Console.WriteLine("Invoices saved.");
         }
 
-        // Create a new invoice with input validation
         public void CreateInvoice()
         {
             string name;
@@ -50,7 +39,7 @@ namespace JSONCRUD.Services
                     name = CapitalizeName(name);
                     break;
                 }
-                ShowError("Invalid name. Only letters (including accents), spaces and hyphens allowed.");
+                Console.WriteLine("Invalid name. Only letters (including accents), spaces and hyphens allowed.");
             }
 
             var items = new List<InvoiceItem>();
@@ -66,7 +55,7 @@ namespace JSONCRUD.Services
                     Console.Write("Quantity: ");
                     if (int.TryParse(Console.ReadLine(), out quantity) && quantity > 0)
                         break;
-                    ShowError("Invalid quantity. Must be a positive integer.");
+                    Console.WriteLine("Invalid quantity. Must be a positive integer.");
                 }
 
                 decimal unitPrice;
@@ -75,7 +64,7 @@ namespace JSONCRUD.Services
                     Console.Write("Unit price (e.g. 12,50): ");
                     if (decimal.TryParse(Console.ReadLine(), NumberStyles.Number, _nlCulture, out unitPrice) && unitPrice >= 0)
                         break;
-                    ShowError("Invalid unit price. Must be a non-negative number.");
+                    Console.WriteLine("Invalid unit price. Must be a non-negative number.");
                 }
 
                 items.Add(new InvoiceItem
@@ -99,7 +88,6 @@ namespace JSONCRUD.Services
             Console.WriteLine("Invoice created.");
         }
 
-        // Display all invoices
         public void ReadAllInvoices()
         {
             if (!_invoices.Any())
@@ -114,20 +102,19 @@ namespace JSONCRUD.Services
             }
         }
 
-        // Delete an invoice by ID with confirmation
         public void DeleteInvoice()
         {
             Console.Write("Enter invoice ID to delete: ");
             if (!int.TryParse(Console.ReadLine(), out int id))
             {
-                ShowError("Invalid ID.");
+                Console.WriteLine("Invalid ID.");
                 return;
             }
 
             var invoice = _invoices.FirstOrDefault(i => i.Id == id);
             if (invoice == null)
             {
-                ShowError("Invoice not found.");
+                Console.WriteLine("Invoice not found.");
                 return;
             }
 
@@ -144,33 +131,29 @@ namespace JSONCRUD.Services
             }
         }
 
-        // Search and display an invoice by ID
         public void SearchInvoiceById()
         {
             Console.Write("Enter invoice ID to search: ");
             if (!int.TryParse(Console.ReadLine(), out int id))
             {
-                ShowError("Invalid ID.");
+                Console.WriteLine("Invalid ID.");
                 return;
             }
 
             var invoice = _invoices.FirstOrDefault(i => i.Id == id);
             if (invoice == null)
             {
-                ShowError("Invoice not found.");
+                Console.WriteLine("Invoice not found.");
                 return;
             }
 
             DisplayInvoice(invoice);
         }
 
-        // Private Methods 
-
-        // Display formatted invoice details
         private void DisplayInvoice(Invoice inv)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(SeparatorLine);
+            Console.WriteLine(new string('=', 40));
             Console.WriteLine($"Invoice ID   : {inv.Id}");
             Console.WriteLine($"Customer     : {inv.CustomerName}");
             Console.WriteLine($"Date         : {inv.InvoiceDate:dd-MM-yyyy}");
@@ -182,11 +165,10 @@ namespace JSONCRUD.Services
             Console.WriteLine($"Subtotal     : {inv.TotalAmount.ToString("C", _nlCulture)}");
             Console.WriteLine($"VAT (21%)    : {inv.VATAmount.ToString("C", _nlCulture)}");
             Console.WriteLine($"Total incl.  : {inv.TotalWithVAT.ToString("C", _nlCulture)}");
-            Console.WriteLine(SeparatorLine);
+            Console.WriteLine(new string('=', 40));
             Console.ResetColor();
         }
 
-        // Validate customer name
         private bool IsValidName(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) return false;
@@ -198,19 +180,10 @@ namespace JSONCRUD.Services
             return true;
         }
 
-        // Capitalize customer name
         private string CapitalizeName(string name)
         {
             TextInfo textInfo = _nlCulture.TextInfo;
             return textInfo.ToTitleCase(name.ToLower());
-        }
-
-        // Show formatted error message
-        private void ShowError(string message)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(message);
-            Console.ResetColor();
         }
     }
 }

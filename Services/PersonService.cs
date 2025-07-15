@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using JSONCRUD.Models;
-using JSONCRUD.Utilities;
+using FactuurApp.Models;
+using FactuurApp.Utilities;
 
-namespace JSONCRUD.Services
+namespace FactuurApp.Services
 {
     // Service for managing people with input validation
     public class PersonService

@@ -1,6 +1,6 @@
-﻿using System;
-using JSONCRUD.Services;
-using JSONCRUD.Utilities;
+﻿using FactuurApp.Services;
+using FactuurApp.Utilities;
+using System;
 
 class Program
 {
@@ -16,7 +16,6 @@ class Program
         }
     }
 
-    // Display the main menu
     static void ShowMainMenu()
     {
         Console.ForegroundColor = ConsoleColor.Cyan;
@@ -28,15 +27,18 @@ class Program
         Console.Write("Choose an option: ");
     }
 
-    // Handle main menu user input
     static void HandleMainMenuInput(PersonService personService, InvoiceService invoiceService)
     {
         string? input = Console.ReadLine();
 
         switch (input)
         {
-            case "1": HandlePersonMenu(personService); break;
-            case "2": HandleInvoiceMenu(invoiceService); break;
+            case "1":
+                ShowPersonMenu(personService);
+                break;
+            case "2":
+                ShowInvoiceMenu(invoiceService);
+                break;
             case "0":
                 personService.SaveAndExit();
                 invoiceService.SaveAndExit();
@@ -48,8 +50,7 @@ class Program
         }
     }
 
-    // Display and handle person management menu
-    static void HandlePersonMenu(PersonService service)
+    static void ShowPersonMenu(PersonService service)
     {
         while (true)
         {
@@ -83,8 +84,7 @@ class Program
         }
     }
 
-    // Display and handle invoice management menu
-    static void HandleInvoiceMenu(InvoiceService service)
+    static void ShowInvoiceMenu(InvoiceService service)
     {
         while (true)
         {
@@ -112,7 +112,6 @@ class Program
         }
     }
 
-    // Display error messages in red
     static void ShowError(string message)
     {
         Console.ForegroundColor = ConsoleColor.Red;
