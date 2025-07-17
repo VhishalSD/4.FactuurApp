@@ -1,6 +1,5 @@
 ﻿using FactuurApp.Models;
 using FactuurApp.Utilities;
-using FactuurApp.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,25 +7,28 @@ using System.Linq;
 
 namespace FactuurApp.Services
 {
+    // Service to manage invoices, including creation, reading, searching and deletion
     public class InvoiceService
     {
         private readonly JsonFileHandler _jsonHandler;
         private List<Invoice> _invoices;
         private const string FilePath = "invoices.json";
-        private readonly CultureInfo _nlCulture = new CultureInfo("nl-NL");
 
+        // Constructor loads invoices from JSON file
         public InvoiceService(JsonFileHandler jsonHandler)
         {
             _jsonHandler = jsonHandler;
             _invoices = _jsonHandler.LoadFromJson<Invoice>(FilePath);
         }
 
+        // Save all invoices to JSON file
         public void SaveAndExit()
         {
             _jsonHandler.SaveToJson(FilePath, _invoices);
             Console.WriteLine("Invoices saved.");
         }
 
+        // Create a new invoice with customer name and multiple items
         public void CreateInvoice()
         {
             string name;
@@ -62,7 +64,7 @@ namespace FactuurApp.Services
                 while (true)
                 {
                     Console.Write("Unit price (e.g. 12,50): ");
-                    if (decimal.TryParse(Console.ReadLine(), NumberStyles.Number, _nlCulture, out unitPrice) && unitPrice >= 0)
+                    if (decimal.TryParse(Console.ReadLine(), NumberStyles.Number, CultureInfo.CurrentCulture, out unitPrice) && unitPrice >= 0)
                         break;
                     Console.WriteLine("Invalid unit price. Must be a non-negative number.");
                 }
@@ -88,6 +90,7 @@ namespace FactuurApp.Services
             Console.WriteLine("Invoice created.");
         }
 
+        // Display all invoices
         public void ReadAllInvoices()
         {
             if (!_invoices.Any())
@@ -102,6 +105,7 @@ namespace FactuurApp.Services
             }
         }
 
+        // Delete an invoice by ID with confirmation
         public void DeleteInvoice()
         {
             Console.Write("Enter invoice ID to delete: ");
@@ -131,6 +135,7 @@ namespace FactuurApp.Services
             }
         }
 
+        // Search and display invoice by ID
         public void SearchInvoiceById()
         {
             Console.Write("Enter invoice ID to search: ");
@@ -150,6 +155,7 @@ namespace FactuurApp.Services
             DisplayInvoice(invoice);
         }
 
+        // Private helper to display invoice details with euro formatting
         private void DisplayInvoice(Invoice inv)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -160,15 +166,16 @@ namespace FactuurApp.Services
             Console.WriteLine("Items:");
             foreach (var item in inv.Items)
             {
-                Console.WriteLine($"- {item.Description}: {item.Quantity} x {item.UnitPrice.ToString("C", _nlCulture)} = {item.SubTotal.ToString("C", _nlCulture)}");
+                Console.WriteLine($"- {item.Description}: {item.Quantity} x {item.UnitPrice.ToString("C", CultureInfo.CurrentCulture)} = {item.SubTotal.ToString("C", CultureInfo.CurrentCulture)}");
             }
-            Console.WriteLine($"Subtotal     : {inv.TotalAmount.ToString("C", _nlCulture)}");
-            Console.WriteLine($"VAT (21%)    : {inv.VATAmount.ToString("C", _nlCulture)}");
-            Console.WriteLine($"Total incl.  : {inv.TotalWithVAT.ToString("C", _nlCulture)}");
+            Console.WriteLine($"Subtotal     : {inv.TotalAmount.ToString("C", CultureInfo.CurrentCulture)}");
+            Console.WriteLine($"VAT (21%)    : {inv.VATAmount.ToString("C", CultureInfo.CurrentCulture)}");
+            Console.WriteLine($"Total incl.  : {inv.TotalWithVAT.ToString("C", CultureInfo.CurrentCulture)}");
             Console.WriteLine(new string('=', 40));
             Console.ResetColor();
         }
 
+        // Validate customer name input (letters, spaces, hyphen)
         private bool IsValidName(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) return false;
@@ -180,9 +187,10 @@ namespace FactuurApp.Services
             return true;
         }
 
+        // Capitalize customer name to title case
         private string CapitalizeName(string name)
         {
-            TextInfo textInfo = _nlCulture.TextInfo;
+            TextInfo textInfo = CultureInfo.CurrentCulture.TextInfo;
             return textInfo.ToTitleCase(name.ToLower());
         }
     }

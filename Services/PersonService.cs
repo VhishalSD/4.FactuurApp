@@ -8,35 +8,26 @@ using FactuurApp.Utilities;
 
 namespace FactuurApp.Services
 {
-    // Service for managing people with input validation
+    // Service to manage people with validation and CRUD operations
     public class PersonService
     {
-        // Readonly Private Fields 
         private readonly JsonFileHandler _jsonHandler;
-
-        // Private Fields 
         private List<Person> _people;
-
-        // Constants 
         private const string FilePath = "people.json";
-        private const string SeparatorLine = "========================================";
 
-        // Constructor 
         public PersonService(JsonFileHandler jsonHandler)
         {
             _jsonHandler = jsonHandler;
             _people = _jsonHandler.LoadFromJson<Person>(FilePath);
         }
 
-        // Public Methods 
-
-        // Save all data to JSON and exit
+        // Save people list to JSON file
         public void SaveAndExit()
         {
             _jsonHandler.SaveToJson(FilePath, _people);
         }
 
-        // Create a new person with input validation
+        // Create a new person with validated input
         public void CreatePerson()
         {
             string? name = ReadValidatedName("Enter name (letters, spaces, hyphen; empty to cancel): ");
@@ -65,7 +56,7 @@ namespace FactuurApp.Services
                 Console.WriteLine($"#{p.Id} - {p.Name} ({p.BirthDate:dd-MM-yyyy})");
         }
 
-        // Search for people by name
+        // Search people by name substring (case-insensitive)
         public void SearchByName()
         {
             Console.Write("Enter name to search: ");
@@ -79,7 +70,7 @@ namespace FactuurApp.Services
                 Console.WriteLine("No person found.");
         }
 
-        // Update existing person details
+        // Update existing person details with input validation
         public void UpdatePerson()
         {
             Console.Write("Enter ID of person to update: ");
@@ -100,14 +91,14 @@ namespace FactuurApp.Services
             if (newName != null)
                 person.Name = newName;
 
-            DateTime? newBirthdate = ReadValidatedBirthdate("New birthdate (dd-MM-yyyy; leave empty to keep current)");
+            DateTime? newBirthdate = ReadValidatedBirthdate("New birthdate (dd-MM-yyyy; leave empty to keep current): ");
             if (newBirthdate != null)
                 person.BirthDate = newBirthdate.Value;
 
             Console.WriteLine("Person updated.");
         }
 
-        // Confirm and delete a person by ID
+        // Confirm deletion and delete person by ID
         public void ConfirmDeletePerson()
         {
             Console.Write("Enter ID to delete: ");
@@ -126,6 +117,7 @@ namespace FactuurApp.Services
 
             Console.Write($"Are you sure you want to delete {person.Name}? (y/n): ");
             string confirm = Console.ReadLine()?.Trim().ToLower() ?? "n";
+
             if (confirm == "y")
             {
                 _people.Remove(person);
@@ -133,11 +125,11 @@ namespace FactuurApp.Services
             }
             else
             {
-                Console.WriteLine("Delete cancelled.");
+                Console.WriteLine("Deletion cancelled.");
             }
         }
 
-        // Show sorting menu for people
+        // Sort people list by various criteria
         public void SortPersonsMenu()
         {
             Console.WriteLine("\nSort by:");
@@ -175,7 +167,7 @@ namespace FactuurApp.Services
             ReadAllPersons();
         }
 
-        // Show statistics about people
+        // Show statistics about the people stored
         public void ShowStatistics()
         {
             if (!_people.Any())
@@ -196,9 +188,7 @@ namespace FactuurApp.Services
             Console.WriteLine($"Oldest person  : {oldestAge} years old");
         }
 
-        // === Private Methods ===
-
-        // Validate and read name input
+        // Private helper method to read and validate name input
         private string? ReadValidatedName(string prompt)
         {
             while (true)
@@ -223,7 +213,7 @@ namespace FactuurApp.Services
             }
         }
 
-        // Validate and read birthdate input
+        // Private helper method to read and validate birthdate input
         private DateTime? ReadValidatedBirthdate(string prompt)
         {
             DateTime earliestDate = DateTime.Now.AddYears(-120);
