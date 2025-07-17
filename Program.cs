@@ -9,6 +9,8 @@ namespace FactuurApp
     {
         static void Main(string[] args)
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
             // Set default culture to Dutch (Netherlands) for euro symbol support and date formatting
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("nl-NL");
             CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("nl-NL");
